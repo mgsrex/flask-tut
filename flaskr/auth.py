@@ -4,7 +4,7 @@ from flask import(
 )
 
 from werkzeug.security import check_password_hash, generate_password_hash
-from flaskr import db
+#from flaskr import db
 
 from flaskr.db import get_db
 
@@ -17,29 +17,30 @@ def register():
         password = request.form['password']
         db = get_db()
         error = None
-        
+
         if not username:
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
-        
+
         if error is None:
             try:
                 db.execute(
-                   "INSERT INFO user (username, password) VALUES (?, ?)",
-                   (username, generate_password_hash(password)), 
+                    "INSERT INTO user (username, password) VALUES (?, ?)",
+                    (username, generate_password_hash(password)),
                 )
                 db.commit()
             except db.IntegrityError:
                 error = f"User {username} is already registered."
             else:
                 return redirect(url_for("auth.login"))
+
         flash(error)
-    
+
     return render_template('auth/register.html')
 
 @bp.route('/login', methods=('GET', 'POST'))
-def register():
+def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
